@@ -1,0 +1,27 @@
+{
+  "name": "town-crier-web-scraper",
+  "version": "1.0.0",
+  "description": "A news-gathering Node.js web-scraper powered by MongoDB and Cheerio.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HillaryBLavin/town-crier-web-scraper.git"
+  },
+  "author": "Hillary B. Lavin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HillaryBLavin/town-crier-web-scraper/issues"
+  },
+  "homepage": "https://github.com/HillaryBLavin/town-crier-web-scraper#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cheerio": "^1.0.0-rc.2",
+    "express": "^4.16.3",
+    "express-handlebars": "^3.0.0",
+    "mongoose": "^5.1.5",
+    "request": "^2.87.0"
+  }
+}
