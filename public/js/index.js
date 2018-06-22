@@ -1,15 +1,16 @@
 $(document).ready(function() {
-    var articleContainer = $(".article-container"); // Hook into article-container div
-    $(document).on("click", ".btn-save", handleArticleSave); // On-click for "Save Article" button
+    var articleContainer = $(".article-container"); // Hosaved into article-container div
+    $(document).on("click", ".btn.save", handleArticleSave); // On-click for "Save Article" button
     $(document).on("click", ".scrape-new", handleArticleScrape); // On-click for "Scrape Ye New Articles" button
 
     renderPage(); 
 
     // A function for initially running the page
     function renderPage() {
-        articleContainer.empty();
+
         $.get("/api/headlines?saved=false")
         .then(function(data) {
+            articleContainer.empty();
             if (data && data.length) {
                 renderArticles(data);
             } else {
@@ -25,31 +26,6 @@ $(document).ready(function() {
             articleCards.push(createCard(articles[i]));
         }
         articleContainer.append(articleCards);
-    }
-
-    function renderEmpty() {
-        var emptyAlert = 
-            $([
-                '<div class="modal fade" id="exampleModalCenter emptyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">',
-                '<div class="modal-dialog modal-dialog-centered" role="document">',
-                    '<div class="modal-content">',
-                    '<div class="modal-header">',
-                        '<h5 class="modal-title" id="exampleModalLongTitle">Zwounds!</h5>',
-                        '<button type="button" class="close" data-dismiss="modal" aria-label="Close">',
-                        '<span aria-hidden="true">&times;</span>',
-                        '</button>',
-                    '</div>',
-                    '<div class="modal-body">It appears thou hast no new articles. What wouldst thou do?</div>',
-                    '<div class="modal-footer">',
-                        '<a class="btn btn-primary scrape-new">Scrape Ye New Articles!</a>',
-                        '<a class="btn btn-primary" href="/saved">Saved Articles</a>',
-                    '</div>',
-                    '</div>',
-                '</div>',
-                '</div>'
-            ].join(""));
-        articleContainer.append(emptyAlert);
-        $("#emptyModal").modal(options);
     }
 
     function createCard(article) {
@@ -75,22 +51,45 @@ $(document).ready(function() {
         return card;
     }
 
+    function renderEmpty() {
+        var emptyAlert = $(
+        [
+            "<div class='alert alert-warning text-center'>",
+            "<h4>Uh Oh. Losaveds like we don't have any new articles.</h4>",
+            "</div>",
+            "<div class='card'>",
+            "<div class='card-header text-center'>",
+            "<h3>What Would You Like To Do?</h3>",
+            "</div>",
+            "<div class='card-body text-center'>",
+            "<h4><a class='scrape-new'>Try Scraping New Articles</a></h4>",
+            "<h4><a href='/saved'>Go to Saved Articles</a></h4>",
+            "</div>",
+            "</div>"
+        ].join("")
+        );
+        articleContainer.append(emptyAlert);
+    }
+
+
+
     function handleArticleSave() {
         var articleToSave = $(this).parents(".card").data();
         articleToSave.saved = true;
         $.ajax({
-            method: "PATCH",
+            method: "PUT",
             url: "/api/headlines",
             data: articleToSave
         })
         .then(function (data) {  
-            if (data.ok) {
+            if (data.saved) {
                 renderPage();
             }
         });
     }
 
     function handleArticleScrape() {
+
         $.get("/api/fetch")
             .then(function(data) {
                 renderPage();
