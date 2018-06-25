@@ -15,7 +15,7 @@ var app = express();
 var router = express.Router();
 
 // Require all models
-var db = require("./models");
+// var db = require("./models");
 
 // Require routes
 require("./config/routes")(router);
