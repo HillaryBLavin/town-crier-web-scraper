@@ -5,10 +5,10 @@ $(document).ready(function () {
     $(document).on("click", ".btn.save", handleNoteSave);
     $(document).on("click", ".btn.note-delete", handleNoteDelete);
 
-    renderPage();
+    initPage();
 
     // A function for initially running the page
-    function renderPage() {
+    function initPage() {
         articleContainer.empty();
         $.get("/api/headlines?saved=true")
             .then(function (data) {
@@ -29,31 +29,26 @@ $(document).ready(function () {
     }
 
     function renderEmpty() {
-        var emptyAlert =
-            $([
-                '<div class="modal fade" id="exampleModalCenter emptyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">',
-                '<div class="modal-dialog modal-dialog-centered" role="document">',
-                '<div class="modal-content">',
-                '<div class="modal-header">',
-                '<h5 class="modal-title" id="exampleModalLongTitle">Zwounds!</h5>',
-                '<button type="button" class="close" data-dismiss="modal" aria-label="Close">',
-                '<span aria-hidden="true">&times;</span>',
-                '</button>',
-                '</div>',
-                '<div class="modal-body">It appears thou hast no saved articles. Wouldst thou like to browse available articles?</div>',
-                '<div class="modal-footer">',
-                '<a class="btn btn-primary" href="/">Verily!</a>',
-                '</div>',
-                '</div>',
-                '</div>',
-                '</div>'
-            ].join(""));
+        var emptyAlert = $(
+        [
+            "<div class='alert alert-warning text-center'>",
+            "<h4>Zwounds! You've not saved any articles!</h4>",
+            "</div>",
+            "<div class='card'>",
+            "<div class='card-header text-center'>",
+            "<h3>Wouldst thou like to browse available articles?</h3>",
+            "</div>",
+            "<div class='card-body text-center'>",
+            "<h4><a href='/'>Browse Articles</a></h4>",
+            "</div>",
+            "</div>"
+        ].join("")
+        );
         articleContainer.append(emptyAlert);
-        $("#emptyModal").modal(options);
     }
 
     function renderNotesList(data) {
-        var NotesToRender = [];
+        var notesToRender = [];
         var currentNote;
         if (!data.notes.length) {
             currentNote = [
@@ -61,7 +56,7 @@ $(document).ready(function () {
                 "There be nary a note here, m'lord!",
                 "</li>"
             ].join("");
-            NotesToRender.push(currentNote);
+            notesToRender.push(currentNote);
         } else {
             for (var i = 0; i < data.notes.length; i++) {
                 currentNote = $([
@@ -71,34 +66,31 @@ $(document).ready(function () {
                     "</li>"
                 ].join(""));
                 currentNote.children("button").data("_id", data.notes[i]._id);
-                NotesToRender.push(currentNote);
+                notesToRender.push(currentNote);
             }
         }
-        $(".note-container").append(NotesToRender);
+        $(".note-container").append(notesToRender);
     }
 
 
     function createCard(article) {
-        var card =
-            $(
-                `<div class="row">
-                    <div class="col-3">
-                        <img src="${article.thumbnail}" alt="Image" class="img-thumbnail">
-                    </div>
-                    <div class="col-sm-9">
-                        <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">${article.headline}</h5>
-                            <p class="card-text">${article.date}</p>
-                            <a class="btn btn-danger delete">Delete Article</a>
-                            <a class="btn btn-info notes">Article Notes</a>
-                        </div>
-                        </div>
-                    </div>
-                </div>`
-            );
-        card.data("_id", article._id);
+        var card = 
+        $(["<div class='card'>",
+            "<h5 class='card-title'>",
+            article.headline,
+            "<a class='btn btn-primary save'>",
+            "Save Article",
+            "</a>",
+            "</h5>",
+            "<div class='card-body'>",
+            "<p class='card-tex'>",
+            article.summary,
+            "</p>",
+            "</div",
+            "</div>"
+        ].join(""));
 
+        card.data("_id", article._id);
         return card;
     }
 
@@ -110,9 +102,39 @@ $(document).ready(function () {
             })
             .then(function (data) {
                 if (data.ok) {
-                    renderPage();
+                    initPage();
                 }
             });
+    }
+
+    function handleArticleNotes() {
+        var currentArticle = $(this).parents(".card").data();
+        $.get("/api/notes/" + currentArticle._id).then(function (data) {
+            var modalText = [
+                "<div class='container-fluid text-center'>",
+                "<h4>Notes for Article: ",
+                currentArticle._id,
+                "</h4>",
+                "<hr />",
+                "<ul class='list-group note-container'>",
+                "</ul>",
+                "<textarea placeholder='New Note' rows='4' cols='60'></textarea>",
+                "<button class='btn btn-success save'>Save Thine Note</button>",
+                "</div>"
+            ].join("");
+            bootbox.dialog({
+                message: modalText,
+                closeButton: true
+            });
+            var noteData = {
+                _id: currentArticle._id,
+                notes: data || []
+            };
+
+            $(".btn.save").data("article", noteData);
+
+            renderNotesList(noteData);
+        });
     }
 
     function handleNoteSave() {
@@ -139,38 +161,4 @@ $(document).ready(function () {
             bootbox.hideAll();
         });
     }
-    
-    function handleArticleNotes() {
-        var currentArticle = $(this).parents(".card").data();
-        $.get("/api/notes/" + currentArticle._id).then(function (data) {
-            var modalText = [
-                "<div class='container-fluid text-center'>",
-                "<h4>Notes for Article: ",
-                currentArticle._id,
-                "</h4>",
-                "<ul class='list-group' note-container'>",
-                "</ul>",
-                "<textarea placeholder='New Note' rows='4' cols='60'></textarea>",
-                "<button class='btn btn-success save'>Save Thine Note</button>",
-                "</div>"
-            ].join("");
-            bootbox.dialog({
-                message: modalText,
-                closeButton: true
-            });
-            var noteData = {
-                _id: currentArticle._id,
-                notes: data || []
-            };
-
-            $(".btn.save").data("article", noteData);
-
-            renderNotesList(noteData);
-        });
-    }
-
-
-
-
-
-})
+});

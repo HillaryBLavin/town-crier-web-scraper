@@ -98,12 +98,12 @@ $(document).ready(function() {
         var articleToSave = $(this).parents(".card").data();
         articleToSave.saved = true;
         $.ajax({
-            method: "PUT",
+            method: "PATCH",
             url: "/api/headlines",
             data: articleToSave
         })
         .then(function (data) {  
-            if (data.saved) {
+            if (data.ok) {
                 initPage();
             }
         });
