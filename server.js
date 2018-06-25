@@ -15,7 +15,7 @@ var app = express();
 var router = express.Router();
 
 // Require all models
-// var db = require("./models");
+var db = require("./models");
 
 // Require routes
 require("./config/routes")(router);
@@ -34,8 +34,9 @@ app.set("view engine", "handlebars");
 // Configure middleware
 // Use body-parser for handling form submissions
 app.use(bodyParser.urlencoded({ extended: false }));
+
 // Use express.static to serve the public folder as a static directory
-app.use(express.static("public"));
+app.use(express.static(__dirname + "/public"));
 
 app.use(router);
 
