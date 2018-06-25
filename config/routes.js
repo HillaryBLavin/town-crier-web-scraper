@@ -46,7 +46,7 @@ module.exports = function(router) {
             res.json(data);
         });
     });
-    router.put("/api/headlines", function(req, res) {
+    router.patch("/api/headlines", function(req, res) {
         headlinesController.update(req.body, function(err, data) {
             res.json(data);
         });
@@ -72,4 +72,4 @@ module.exports = function(router) {
             res.json(data);
         });
     });
-} 
+}   
