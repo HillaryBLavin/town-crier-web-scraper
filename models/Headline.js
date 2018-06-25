@@ -8,11 +8,7 @@ var headlineSchema = new Schema ({
         required: true,
         unique: true
     },
-    thumbnail: {
-        type: String,
-        required: true
-    },
-    link: {
+    summary: {
         type: String,
         required: true
     },
