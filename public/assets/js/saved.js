@@ -97,6 +97,7 @@ $(document).ready(function () {
 
     function handleArticleDelete() {
         var articleToDelete = $(this).parents(".card").data();
+        $(this).parents(".card").remove();
         $.ajax({
                 method: "DELETE",
                 url: "/api/headlines/" + articleToDelete._id
@@ -111,18 +112,13 @@ $(document).ready(function () {
     function handleArticleNotes() {
         var currentArticle = $(this).parents(".card").data();
         $.get("/api/notes/" + currentArticle._id).then(function (data) {
-            var modalText = [
-                "<div class='container-fluid text-center'>",
-                "<h4>Notes for Article: ",
-                currentArticle._id,
-                "</h4>",
-                "<hr />",
-                "<ul class='list-group note-container'>",
-                "</ul>",
-                "<textarea placeholder='New Note' rows='4' cols='60'></textarea>",
-                "<button class='btn btn-success save'>Save Thine Note</button>",
-                "</div>"
-            ].join("");
+            var modalText = $("<div class='container-fluid text-center'>").append(
+                $("<h4>").text("Thine Notes for Article: " + currentArticle._id),
+                $("<hr>"),
+                $("<ul class='list-group note-container'>"),
+                $("<textarea placeholder='New Note' rows='4' cols='60'>"),
+                $("<button class='btn btn-success save'>Save Note</button>")
+              );
             bootbox.dialog({
                 message: modalText,
                 closeButton: true
