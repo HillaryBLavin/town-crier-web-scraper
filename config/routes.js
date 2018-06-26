@@ -57,7 +57,7 @@ module.exports = function(router) {
             query._id = req.params.headline_id;
         }
         notesController.get(query, function(err, data) {
-            res.jsoon(data);
+            res.json(data);
         });
     });
     router.delete("/api/notes/:id", function(req, res) {
