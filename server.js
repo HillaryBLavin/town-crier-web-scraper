@@ -3,7 +3,6 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var expressBars = require("express-handlebars");
 var mongoose = require("mongoose");
-// var axios = require("axios");
 var cheerio = require("cheerio");
 
 // Connect to server
@@ -14,8 +13,6 @@ var app = express();
 // Initialize Express router
 var router = express.Router();
 
-// Require all models
-// var db = require("./models");
 
 // Require routes
 require("./config/routes")(router);
